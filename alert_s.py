@@ -1,0 +1,132 @@
+from flask import Flask, request, jsonify
+from flask_socketio import SocketIO
+from flask_cors import CORS
+from datetime import datetime, UTC
+import json
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "vedas-alert-ws"
+CORS(app)
+
+# default path "/socket.io" is fine
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+
+connected_clients = set()
+
+
+@app.route("/")
+def index():
+    return {
+        "status": "running",
+        "clients": len(connected_clients),
+    }
+
+
+@app.route("/health")
+def health():
+    return {"status": "ok", "clients": len(connected_clients)}
+
+
+@socketio.on("connect")
+def ws_connect():
+    connected_clients.add(request.sid)
+    print(f"✅ Client connected: {request.sid} | total={len(connected_clients)}")
+
+    socketio.emit(
+        "message",
+        json.dumps(
+            {
+                "category": "system",
+                "type": "info",
+                "message": "Connected to VEDAS Alert WebSocket",
+                "source": "alert_ws_server",
+                "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+                "metadata": {},
+            }
+        ),
+        to=request.sid,
+    )
+
+
+@socketio.on("disconnect")
+def ws_disconnect():
+    connected_clients.discard(request.sid)
+    print(f"🔌 Client disconnected: {request.sid} | total={len(connected_clients)}")
+
+
+@socketio.on("message")
+def ws_message(data):
+    """
+    Receives json from dashboard (e.g. clear notifications)
+    """
+    try:
+        msg = json.loads(data) if isinstance(data, str) else data
+        print(f"📨 from client: {msg}")
+        if msg.get("action") == "clear":
+            socketio.emit("alert_cleared", json.dumps(msg), broadcast=True)
+    except Exception as exc:
+        print(f"❌ error in ws_message: {exc}")
+
+
+def push_alert(
+    category: str,
+    alert_type: str,
+    message: str,
+    source: str = "",
+    server: str = "",
+    metadata: dict | None = None,
+):
+    """
+    Core function that broadcasts an alert to all connected WebSocket clients.
+    """
+    payload = {
+        "category": category,
+        "type": alert_type,
+        "message": message,
+        "source": source or "unknown_source",
+        "server": server or "unknown",
+        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "metadata": metadata or {},
+    }
+
+    # socketio.emit("message", json.dumps(payload),to='*') 
+    # broadcast=True ensures ALL connected clients receive it
+    socketio.emit("message", json.dumps(payload))
+    # broadcast=True)
+    print(
+        f"📤 alert: [{category}] {alert_type} - {message} | clients={len(connected_clients)}"
+    )
+
+
+@app.route("/push-alert", methods=["POST"])
+def http_push_alert():
+    """
+    Endpoint monitoring systems can POST to:
+
+    curl -X POST http://127.0.0.1:5015/push-alert \
+         -H "Content-Type: application/json" \
+         -d '{"category":"server","type":"offline","message":"host down","source":"monitoring_server"}'
+    """
+    data = request.get_json(force=True, silent=True) or {}
+    print("➡️  incoming /push-alert data:", data)  # debug
+
+    try:
+        push_alert(
+            category=data.get("category", "generic"),
+            alert_type=data.get("type", "info"),
+            message=data.get("message", "No message"),
+            source=data.get("source", "unknown_source"),
+            server=data.get("server", "unknown"),
+            metadata=data.get("metadata") or {},
+        )
+        return {"status": "ok"}, 200
+    except Exception as exc:
+        # log full error so you see why 500 happens
+        print("❌ push-alert error:", repr(exc))
+        return {"status": "error", "error": str(exc)}, 500
+
+
+if __name__ == "__main__":
+    print("🚀 starting VEDAS Alert WebSocket on 127.0.0.1:5015")
+    socketio.run(app, host="127.0.0.1", port=5015, debug=True, allow_unsafe_werkzeug=True)
+
