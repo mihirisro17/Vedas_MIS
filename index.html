@@ -2192,14 +2192,14 @@
         </main>
 
         <!-- ✅ NOTIFICATION BELL (SHOWS WHEN PANEL IS CLOSED) -->
-        <div v-if="totalAlerts > 0 && alertPanelCollapsedLeft" class="notification-indicator"
-            @click="openAlertPanel">
+        <div v-if="totalAlerts > 0 && alertPanelCollapsedLeft" class="notification-indicator" @click="openAlertPanel">
             <div class="notification-icon">🔔</div>
             <div class="notification-count">{{ totalAlerts }}</div>
         </div>
 
         <!-- ✅ ALERT PANEL WITH COLLAPSE/CLEAR BUTTONS -->
-        <div :class="['alert-panel', { 'collapsed-up': alertPanelCollapsedUp, 'collapsed-left': alertPanelCollapsedLeft }]">
+        <div
+            :class="['alert-panel', { 'collapsed-up': alertPanelCollapsedUp, 'collapsed-left': alertPanelCollapsedLeft }]">
             <div class="alert-header">
                 <div class="alert-header-title">
                     <span class="alert-header-icon">🔔</span>
@@ -2217,56 +2217,37 @@
                     <button class="alert-control-btn" @click="closeAlertPanel">✕</button>
                 </div>
             </div>
-
             <div class="alert-body">
                 <div v-if="totalAlerts === 0" class="no-alerts">
                     🎉 No alerts<br>All systems operational
                 </div>
 
                 <div v-else>
-                    <!-- SERVER ALERTS -->
-                    <div class="alert-section" v-if="alertsByCategory.server && alertsByCategory.server.length > 0">
-                        <div class="alert-section-header" @click="toggleServerSection">
-                            <div class="alert-section-title">
-                                🖥️ Server Alerts ({{ alertsByCategory.server.length }})
-                            </div>
-                            <span class="collapse-icon" :class="{ collapsed: serverSectionCollapsed }">▼</span>
-                        </div>
-                        <div class="alert-section-content"
-                            :class="{ collapsed: serverSectionCollapsed, 'limit-height': !serverSectionCollapsed && alertsByCategory.server.length > 2 }">
-                            <div v-for="(alert, index) in alertsByCategory.server" :key="'server-' + index"
-                                class="alert-item" :class="'alert-' + alert.type.toLowerCase()">
-                                <div class="alert-content">
-                                    <div class="alert-type">{{ alert.type }}</div>
-                                    <div class="alert-message">{{ alert.message }}</div>
-                                    <div class="alert-server">{{ alert.server }}</div>
+                    <!-- ✅ FIX: Change variable name from 'alerts' to 'categoryAlerts' -->
+                    <template v-for="(categoryAlerts, category) in alertsByCategory" :key="category">
+                        <div v-if="categoryAlerts && categoryAlerts.length > 0" class="alert-section">
+                            <div class="alert-section-header" @click="toggleSection(category)">
+                                <div class="alert-section-title">
+                                    {{ getCategoryIcon(category) }} {{ getCategoryName(category) }} ({{
+                                    categoryAlerts.length }})
                                 </div>
-                                <button class="alert-delete-btn" @click="removeAlert('server', index)" title="Remove alert">✕</button>
+                                <span class="collapse-icon" :class="{ collapsed: collapsedSections[category] }">▼</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- SYSTEM ALERTS -->
-                    <div class="alert-section" v-if="alertsByCategory.system && alertsByCategory.system.length > 0">
-                        <div class="alert-section-header" @click="toggleSystemSection">
-                            <div class="alert-section-title">
-                                ⚠️ System Alerts ({{ alertsByCategory.system.length }})
-                            </div>
-                            <span class="collapse-icon" :class="{ collapsed: systemSectionCollapsed }">▼</span>
-                        </div>
-                        <div class="alert-section-content"
-                            :class="{ collapsed: systemSectionCollapsed, 'limit-height': !systemSectionCollapsed && alertsByCategory.system.length > 2 }">
-                            <div v-for="(alert, index) in alertsByCategory.system" :key="'system-' + index"
-                                class="alert-item" :class="'alert-' + alert.type.toLowerCase()">
-                                <div class="alert-content">
-                                    <div class="alert-type">{{ alert.type }}</div>
-                                    <div class="alert-message">{{ alert.message }}</div>
-                                    <div class="alert-server">{{ alert.server }}</div>
+                            <div class="alert-section-content"
+                                :class="{ collapsed: collapsedSections[category], 'limit-height': !collapsedSections[category] && categoryAlerts.length > 2 }">
+                                <div v-for="(alert, index) in categoryAlerts" :key="category + '-' + index"
+                                    class="alert-item" :class="'alert-' + alert.type.toLowerCase()">
+                                    <div class="alert-content">
+                                        <div class="alert-type">{{ alert.type }}</div>
+                                        <div class="alert-message">{{ alert.message }}</div>
+                                        <div class="alert-server">{{ alert.server }}</div>
+                                    </div>
+                                    <button class="alert-delete-btn" @click="removeAlert(category, index)"
+                                        title="Remove alert">✕</button>
                                 </div>
-                                <button class="alert-delete-btn" @click="removeAlert('system', index)" title="Remove alert">✕</button>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </div>
 
@@ -2322,6 +2303,7 @@
                     currentTheme: 'theme-vedas',
                     autoThemeEnabled: false,
                     showHistory: false,
+                    collapsedSections: {},
 
                     alertsByCategory: {
                         server: [],
@@ -2356,8 +2338,8 @@
                         { id: 'processingscriptmonitor', name: 'Processing Script Monitor', description: 'Service Health Check', icon: '🔄', url: 'http://192.168.2.137:8080/process_monitoring/' },
                         { id: 'datachainmonitoring', name: 'Data Chain Monitoring', description: 'Satellite Tracking', icon: '🛰️', url: 'http://192.168.2.137:8080/monitoring_sentinel/' },
                         { id: 'publishmonitoring', name: 'Publish Monitoring', description: 'Bounds & Search Data', icon: '🔍', url: 'http://192.168.2.137:8080/ridam_dataset_publisher/' },
-                        { id: 'ridampoolanalytics', name: 'Ridam Pool Analytics', description: 'Bounds & Search Data', icon: '💾', url: 'http://192.168.2.137:8080/pool_storage_monitoring/' },
-                        { id: 'poolgrouphealthmonitoring', name: 'Pool Group Health Monitoring', description: 'Bounds & Search Data', icon: '💽', url: 'http://192.168.2.137:8080/monitoring_health/' },
+                        { id: 'ridampoolanalytics', name: 'Ridam Pool Analytics', description: 'Bounds & Search Data', icon: '🗄️', url: 'http://192.168.2.137:8080/pool_storage_monitoring/' },
+                        { id: 'poolgrouphealthmonitoring', name: 'Pool Group Health Monitoring', description: 'Bounds & Search Data', icon: '🗃️', url: 'http://192.168.2.137:8080/monitoring_health/' },
                         { id: 'geoentitymonitoring', name: 'Geoentity Monitoring', description: 'Bounds & Search Data', icon: '🌍', url: 'http://192.168.2.137:8080/geoentity_monitoring/' },
                     ],
 
@@ -2365,7 +2347,9 @@
                         { id: 'teamanalytics', name: 'Team Analytics', description: 'Performance Metrics', icon: '📈', url: 'http://192.168.2.137:8080/taskboard/dashboard/' }
                     ],
 
-                    toolsApps: []
+                    toolsApps: [
+                        { id: 'ridam Registration', name: 'Ridam Registration', description: 'Bounds & Search Data', icon: '📝', url: 'http://192.168.2.137:8080/ridam_registration/' }
+                    ]
                 };
             },
 
@@ -2454,10 +2438,10 @@
                     if (this.shownBreakTimes.has(timeKey)) return;
 
                     const breakTimes = {
-                        '11:0': { icon: '☕', title: 'Tea Break!', message: 'Time for a refreshing cup of tea!' },
-                        '13:0': { icon: '🍽️', title: 'Lunch Time!', message: 'Enjoy your meal and recharge!' },
-                        '16:30': { icon: '☕', title: 'Evening Snacks!', message: 'Take a break and have some snacks!' },
-                        '18:30': { icon: '🌆', title: 'Office Time is Over!', message: 'Great work today! Time to head home and relax!' }
+                        '10:30': { icon: '☕', title: 'Tea Break!', message: 'Time for a refreshing cup of tea!' },
+                        '12:30': { icon: '🍽️', title: 'Lunch Time!', message: 'Enjoy your meal and recharge!' },
+                        '15:00': { icon: '☕', title: 'Evening Snacks!', message: 'Take a break and have some snacks!' },
+                        '17:30': { icon: '🌆', title: 'Office Time is Over!', message: 'Great work today! Time to head home and relax!' }
                     };
 
                     const breakInfo = breakTimes[timeKey];
@@ -2606,6 +2590,39 @@
                     });
 
                     console.log('✅ All Socket.IO event listeners registered');
+                },
+                getCategoryIcon(category) {
+                    const icons = {
+                        'server': '🖥️',
+                        'system': '⚠️',
+                        'dataset': '📊',
+                        'storage': '💾',
+                        'network': '🌐',
+                        'api': '🔌',
+                        'database': '🗄️'
+                    };
+                    return icons[category] || '🔔';
+                },
+
+                getCategoryName(category) {
+                    return category.charAt(0).toUpperCase() + category.slice(1) + ' Alerts';
+                },
+
+                toggleSection(category) {
+                    // Initialize if doesn't exist
+                    if (this.collapsedSections[category] === undefined) {
+                        this.collapsedSections[category] = false;
+                    }
+                    // Toggle
+                    this.collapsedSections[category] = !this.collapsedSections[category];
+                },
+
+                // ✅ FIX: collapseAllSections without $set
+                collapseAllSections() {
+                    this.allSectionsCollapsed = !this.allSectionsCollapsed;
+                    Object.keys(this.alertsByCategory).forEach(category => {
+                        this.collapsedSections[category] = this.allSectionsCollapsed;
+                    });
                 },
 
                 handleIncomingAlert(notification) {
