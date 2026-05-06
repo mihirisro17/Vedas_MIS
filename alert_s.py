@@ -107,8 +107,10 @@ def http_push_alert():
          -H "Content-Type: application/json" \
          -d '{"category":"server","type":"offline","message":"host down","source":"monitoring_server"}'
     """
+    cip = request.remote_addr
+    cport=request.environ.get('REMOT_PORT')
     data = request.get_json(force=True, silent=True) or {}
-    print("➡️  incoming /push-alert data:", data)  # debug
+    print(f"➡️  incoming /push-alert data: from {cip}:{cport}", data)  # debug
 
     try:
         push_alert(

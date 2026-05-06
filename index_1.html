@@ -327,187 +327,6 @@
             opacity: 0;
         }
 
-
-        /* ═══════ SERVER CRITICAL ALARM BANNER ═══════ */
-        .server-alarm-overlay {
-            position: fixed;
-            top: 80px;
-            left: 0;
-            right: 0;
-            z-index: 2500;
-            display: flex;
-            align-items: stretch;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 40%, #b91c1c 100%);
-            border-bottom: 4px solid #fca5a5;
-            box-shadow: 0 8px 40px rgba(239, 68, 68, 0.6);
-            animation: alarmSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                alarmPulse 1s ease-in-out infinite;
-            overflow: hidden;
-        }
-
-        @keyframes alarmSlideIn {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes alarmPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 8px 40px rgba(239, 68, 68, 0.6);
-            }
-
-            50% {
-                box-shadow: 0 12px 60px rgba(239, 68, 68, 0.95);
-            }
-        }
-
-        .server-alarm-overlay::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(-45deg,
-                    transparent,
-                    transparent 18px,
-                    rgba(255, 255, 255, 0.04) 18px,
-                    rgba(255, 255, 255, 0.04) 36px);
-            pointer-events: none;
-        }
-
-        .alarm-left {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding: 14px 28px;
-            flex: 1;
-        }
-
-        .alarm-siren {
-            font-size: 34px;
-            animation: sirenSpin 0.6s linear infinite;
-            filter: drop-shadow(0 0 12px rgba(255, 200, 50, 0.9));
-        }
-
-        @keyframes sirenSpin {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-
-            25% {
-                transform: rotate(-15deg) scale(1.15);
-            }
-
-            75% {
-                transform: rotate(15deg) scale(1.15);
-            }
-
-            100% {
-                transform: rotate(0deg) scale(1);
-            }
-        }
-
-        .alarm-text-block {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .alarm-title {
-            font-size: 14px;
-            font-weight: 900;
-            color: #fca5a5;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .alarm-server-name {
-            font-size: 20px;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .alarm-detail {
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .alarm-timer-bar-wrap {
-            width: 180px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0 20px;
-            gap: 4px;
-        }
-
-        .alarm-timer-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .alarm-timer-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .alarm-timer-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #fbbf24, #f59e0b);
-            border-radius: 4px;
-            transition: width 1s linear;
-        }
-
-        .alarm-timer-countdown {
-            font-size: 22px;
-            font-weight: 900;
-            color: #fbbf24;
-        }
-
-        .alarm-ack-btn {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            font-size: 15px;
-            font-weight: 900;
-            padding: 0 40px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: 0.5px;
-            min-width: 190px;
-            justify-content: center;
-            text-transform: uppercase;
-        }
-
-        .alarm-ack-btn:hover {
-            background: linear-gradient(135deg, #15803d 0%, #166534 100%);
-            transform: scale(1.04);
-            box-shadow: 0 0 24px rgba(34, 197, 94, 0.6);
-        }
-
-        .alarm-ack-btn .ack-icon {
-            font-size: 22px;
-        }
-
         /* ✨ BREAK TIME NOTIFICATION MODAL */
         .break-notification-modal {
             position: fixed;
@@ -2955,30 +2774,6 @@
     <div id="app">
         <!-- Break Time Notification Modal -->
         <transition name="fade">
-
-            <!-- ═══ SERVER CRITICAL ALARM BANNER ═══ -->
-            <div v-if="serverAlarm.active" class="server-alarm-overlay">
-                <div class="alarm-left">
-                    <div class="alarm-siren">🚨</div>
-                    <div class="alarm-text-block">
-                        <div class="alarm-title">⚠️ Server Critical Alert — Monitor Required</div>
-                        <div class="alarm-server-name">{{ serverAlarm.server }}</div>
-                        <div class="alarm-detail">{{ serverAlarm.typeLabel }} · {{ serverAlarm.message }}</div>
-                    </div>
-                </div>
-                <div class="alarm-timer-bar-wrap">
-                    <div class="alarm-timer-label">Auto-dismiss in</div>
-                    <div class="alarm-timer-countdown">{{ serverAlarm.countdown }}s</div>
-                    <div class="alarm-timer-bar">
-                        <div class="alarm-timer-fill" :style="{ width: (serverAlarm.countdown / 10 * 100) + '%' }">
-                        </div>
-                    </div>
-                </div>
-                <button class="alarm-ack-btn" @click="acknowledgeAlarm">
-                    <span class="ack-icon">✅</span> Acknowledge
-                </button>
-            </div>
-
             <div v-if="showBreakNotification" class="break-notification-modal">
                 <div class="break-notification-content">
                     <div class="break-icon">{{ breakNotification.icon }}</div>
@@ -3392,16 +3187,6 @@
                     sidebarCollapsed: false,
                     isLoading: false,
                     tabPaused: false,
-                    serverAlarm: {
-                        active: false,
-                        server: '',
-                        typeLabel: '',
-                        message: '',
-                        countdown: 10,
-                        _audioObj: null,
-                        _timeoutId: null,
-                        _tickId: null
-                    },
                     currentTheme: 'theme-vedas',
                     autoThemeEnabled: false,
                     showHistory: false,
@@ -3447,7 +3232,6 @@
                         { id: 'ridampoolanalytics', name: 'Ridam Pool Analytics', description: 'Bounds & Search Data', icon: '🗄️', url: 'http://192.168.2.137:8080/pool_storage_monitoring/' },
                         { id: 'poolgrouphealthmonitoring', name: 'Pool Group Health Monitoring', description: 'Bounds & Search Data', icon: '🗃️', url: 'http://192.168.2.137:8080/monitoring_health/' },
                         { id: 'geoentitymonitoring', name: 'Geoentity Monitoring', description: 'Bounds & Search Data', icon: '🌍', url: 'http://192.168.2.137:8080/geoentity_monitoring/' },
-                          { id: 'rastererrorlogs', name: 'Raster Error Logs ', description: 'Raster Publish Error Detection', icon: '🌍', url: 'http://192.168.2.137:8080/ridam_error_logs/' },
 
                     ],
 
@@ -3585,58 +3369,6 @@
                     setTimeout(() => {
                         this.isLoading = false;
                     }, 1000);
-                },
-
-
-                triggerServerAlarm(alert) {
-                    // Stop any existing alarm first
-                    this.acknowledgeAlarm(true);
-
-                    const typeMap = {
-                        'offline': '🔴 SERVER OFFLINE',
-                        'memory': '🟠 MEMORY 100%',
-                        'storage': '🟡 STORAGE 100%'
-                    };
-                    const t = (alert.type || '').toLowerCase();
-
-                    this.serverAlarm.server = alert.server || 'Unknown Server';
-                    this.serverAlarm.typeLabel = typeMap[t] || ('⚠️ ' + alert.type.toUpperCase());
-                    this.serverAlarm.message = alert.message || '';
-                    this.serverAlarm.countdown = 10;
-                    this.serverAlarm.active = true;
-
-                    // Play spaceship alarm sound
-                    try {
-                        const audio = new Audio('https://actions.google.com/sounds/v1/alarms/spaceship_alarm.ogg');
-                        audio.loop = false;
-                        audio.volume = 1.0;
-                        audio.play().catch(e => window._log('🔇 Alarm audio blocked:', e));
-                        this.serverAlarm._audioObj = audio;
-                    } catch (e) {
-                        window._log('❌ Alarm audio error:', e);
-                    }
-
-                    // Countdown tick every second
-                    this.serverAlarm._tickId = setInterval(() => {
-                        this.serverAlarm.countdown--;
-                        if (this.serverAlarm.countdown <= 0) {
-                            this.acknowledgeAlarm(true);
-                        }
-                    }, 1000);
-                },
-
-                acknowledgeAlarm(silent = false) {
-                    // Stop audio
-                    if (this.serverAlarm._audioObj) {
-                        try { this.serverAlarm._audioObj.pause(); } catch (e) { }
-                        this.serverAlarm._audioObj = null;
-                    }
-                    // Clear timers
-                    if (this.serverAlarm._tickId) { clearInterval(this.serverAlarm._tickId); this.serverAlarm._tickId = null; }
-                    if (this.serverAlarm._timeoutId) { clearTimeout(this.serverAlarm._timeoutId); this.serverAlarm._timeoutId = null; }
-                    this.serverAlarm.active = false;
-                    this.serverAlarm.countdown = 10;
-                    if (!silent) window._log('✅ Server alarm acknowledged by user');
                 },
 
                 togglePause() {
@@ -3905,15 +3637,6 @@
                     if (!exists) {
                         this.alertsByCategory[category].unshift(alert);
                         this.playAlertSound(alert.type);  // 🔊 main-app sound — works on any tab
-
-                        // 🚨 SERVER CRITICAL: trigger spaceship alarm for offline / memory 100% / storage 100%
-                        if (category === 'server') {
-                            const criticalTypes = ['offline', 'memory', 'storage'];
-                            const alertType = (alert.type || '').toLowerCase();
-                            if (criticalTypes.includes(alertType)) {
-                                this.triggerServerAlarm(alert);
-                            }
-                        }
                         this.processedAlerts.add(alertKey);
                         console.log(`✅ Alert added to "${category}". Total:`, this.alertsByCategory[category].length);
                     } else {
