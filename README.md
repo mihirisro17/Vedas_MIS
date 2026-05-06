@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=VEDAS%20MIS&fontSize=80&fontColor=fff&animation=twinkling&fontAlignY=35&desc=Management%20Information%20System&descAlignY=55&descSize=24" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&amp;color=gradient&amp;customColorList=6,11,20&amp;height=200&amp;section=header&amp;text=VEDAS%20MIS&amp;fontSize=80&amp;fontColor=fff&amp;animation=twinkling&amp;fontAlignY=35&amp;desc=Management%20Information%20System&amp;descAlignY=55&amp;descSize=24" width="100%" alt="Header" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=6366F1&center=true&vCenter=true&multiline=true&width=800&height=120&lines=🛰️+Comprehensive+Monitoring+%26+Analytics+Dashboard;🌍+Servers+%7C+Services+%7C+Alerts+%7C+Satellite+Data;⚡+Real-Time+Socket.IO+%7C+Vue.js+3" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;size=22&amp;pause=1000&amp;color=6366F1&amp;center=true&amp;vCenter=true&amp;multiline=true&amp;width=800&amp;height=120&amp;lines=%F0%9F%9B%B0%EF%B8%8F+Comprehensive+Monitoring+%26+Analytics+Dashboard;%F0%9F%8C%8D+Servers+%7C+Services+%7C+Alerts+%7C+Satellite+Data;%E2%9A%A1+Real-Time+Socket.IO+%7C+Vue.js+3" alt="Typing SVG" />
 
 <br/>
 
