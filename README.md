@@ -2,7 +2,7 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=VEDAS%20MIS&fontSize=80&fontColor=fff&animation=twinkling&fontAlignY=35&desc=Management%20Information%20System&descAlignY=55&descSize=24" width="100%"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=6366F1&center=true&vCenter=true&multiline=true&width=800&height=80&lines=🛰️+Comprehensive+Monitoring+%26+Analytics+Dashboard;🌍+Servers+%7C+Services+%7C+Alerts+%7C+Satellite+Data;⚡+Real-Time+Socket.IO+%7C+Vue.js+3" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=6366F1&center=true&vCenter=true&multiline=true&width=800&height=120&lines=🛰️+Comprehensive+Monitoring+%26+Analytics+Dashboard;🌍+Servers+%7C+Services+%7C+Alerts+%7C+Satellite+Data;⚡+Real-Time+Socket.IO+%7C+Vue.js+3" alt="Typing SVG" />
 
 <br/>
 
